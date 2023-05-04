@@ -3,28 +3,51 @@ import { AuthContext } from '../context/AuthProvider/AuthProvider';
 import OrderTable from './OrderTable';
 
 const Orders = () => {
-    const { user } = useContext(AuthContext);
+    const { user, logOut } = useContext(AuthContext);
     const [orders, setOrders] = useState([])
 
     useEffect(() => {
-        fetch(`http://localhost:5000/orders?email=${user?.email}`, {
+        console.log('call hosce')
+        fetch(`https://complete-project-mechanics-server-sabeekbinsayeed.vercel.app/orders?email=${user?.email}`, {
             headers: {
+
                 authorization: `Bearer ${localStorage.getItem('genius-token')}`
             }
         })
             .then(res => {
                 if (res.status === 401 || res.status === 403) {
-                    // return logOut();
+                    return logOut();
                 }
                 return res.json();
             })
             .then(data => {
                 setOrders(data);
             })
-    }, [user?.email])
+    }, [user?.email, logOut])
+
+    const handleDelete = id => {
+        const proceed = window.confirm('Are you sure, you want to cancel this order');
+        if (proceed) {
+            fetch(`https://complete-project-mechanics-server-sabeekbinsayeed.vercel.app/orders/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('genius-token')}`
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.deletedCount > 0) {
+                        alert('deleted successfully');
+                        const remaining = orders.filter(odr => odr._id !== id);
+                        setOrders(remaining);
+                    }
+                })
+        }
+    }
+
 
     const handleStatusUpdate = id => {
-        fetch(`http://localhost:5000/orders/${id}`, {
+        fetch(`https://complete-project-mechanics-server-sabeekbinsayeed.vercel.app/orders/${id}`, {
             method: 'PATCH',
             headers: {
                 'content-type': 'application/json',
@@ -46,30 +69,30 @@ const Orders = () => {
             })
     }
 
-    const handleDelete = id => {
-        const proceed = window.confirm('Are you sure, you want to cancel this order');
-        if (proceed) {
-            fetch(`http://localhost:5000/orders/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    authorization: `Bearer ${localStorage.getItem('genius-token')}`
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.deletedCount > 0) {
-                        alert('deleted successfully');
-                        const remaining = orders.filter(odr => odr._id !== id);
-                        setOrders(remaining);
-                    }
-                })
-        }
-    }
+    // const handleDelete = id => {
+    //     const proceed = window.confirm('Are you sure, you want to cancel this order');
+    //     if (proceed) {
+    //         fetch(`https://complete-project-mechanics-server-sabeekbinsayeed.vercel.app/orders/${id}`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 authorization: `Bearer ${localStorage.getItem('genius-token')}`
+    //             }
+    //         })
+    //             .then(res => res.json())
+    //             .then(data => {
+    //                 if (data.deletedCount > 0) {
+    //                     alert('deleted successfully');
+    //                     const remaining = orders.filter(odr => odr._id !== id);
+    //                     setOrders(remaining);
+    //                 }
+    //             })
+    //     }
+    // }
 
 
     return (
         <div>
-            {orders.length}
+
 
             <div className="overflow-x-auto w-full">
                 <table className="table w-full">

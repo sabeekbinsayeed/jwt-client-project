@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import image from '../../assets/images/login/login.svg'
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider/AuthProvider';
 const Login = () => {
     const { login } = useContext(AuthContext);
     const location = useLocation();
-    // const useNavigate = useNavigate();
+    const navigate = useNavigate();
 
-    // const from = location.state?.from?.pathname || '/';
+    const from = location.state?.from?.pathname || '/';
 
     const handleLogin = event => {
         event.preventDefault();
@@ -26,22 +26,24 @@ const Login = () => {
                 }
 
                 console.log(currentUser);
+                // navigate(from, { replace: true });
 
                 // get jwt token
-                // fetch('http://localhost:5000/jwt', {
-                //     method: 'POST',
-                //     headers: {
-                //         'content-type': 'application/json'
-                //     },
-                //     body: JSON.stringify(currentUser)
-                // })
-                //     .then(res => res.json())
-                //     .then(data => {
-                //         console.log(data);
-                //         // local storage is the easiest but not the best place to store jwt token
-                //         localStorage.setItem('genius-token', data.token);
-                //         navigate(from, { replace: true });
-                //     });
+                fetch('https://complete-project-mechanics-server-sabeekbinsayeed.vercel.app/login', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(currentUser)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data);
+                        console.log('data paoa je nai genius token e dia jabe na')
+                        // local storage is the easiest but not the best place to store jwt token
+                        localStorage.setItem('genius-token', data.accessToken);
+                        navigate(from, { replace: true });
+                    });
 
             })
             .catch(error => console.log(error)

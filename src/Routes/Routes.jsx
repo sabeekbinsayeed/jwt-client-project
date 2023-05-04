@@ -5,6 +5,7 @@ import Login from "../Components/Login/Login";
 import Signup from "../Components/Login/Signup";
 import Checkout from "../Components/Checkout/Checkout";
 import Orders from "../Components/Orders/Orders";
+import Private from "./Private";
 
 const router = createBrowserRouter([
     {
@@ -24,13 +25,13 @@ const router = createBrowserRouter([
                 element: <Signup></Signup>
             },
             {
-                path: '/orders/:id',
-                element: <Orders></Orders>
+                path: '/orders',
+                element: <Private><Orders></Orders></Private>
             },
             {
                 path: '/checkout/:id',
-                element: <Checkout></Checkout>,
-                loader: ({ params }) => fetch(`http://localhost:5000/services/${params.id}`)
+                element: <Private><Checkout></Checkout></Private>,
+                loader: ({ params }) => fetch(`https://complete-project-mechanics-server-sabeekbinsayeed.vercel.app/services/${params.id}`)
             },
 
         ]
